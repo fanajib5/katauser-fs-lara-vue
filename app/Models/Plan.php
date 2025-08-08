@@ -15,6 +15,10 @@ class Plan extends Model
         'price',
         'duration',
         'status',
+        'version',
+        'created_by',
+        'updated_by',
+        'deleted_by'
     ];
 
     protected $casts = [
@@ -23,11 +27,8 @@ class Plan extends Model
 
     protected $hidden = [
         'created_at',
-        'created_by',
         'updated_at',
-        'updated_by',
         'deleted_at',
-        'deleted_by'
     ];
 
     public function users()

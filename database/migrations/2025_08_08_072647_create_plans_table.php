@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('price', 10, 2);
-            $table->string('description')->nullable();
-            $table->unsignedInteger('version')->default(1);
+            $table->text('description')->nullable();
+            $table->string('duration');
             $table->boolean('status');
+            $table->unsignedInteger('version')->default(1);
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
