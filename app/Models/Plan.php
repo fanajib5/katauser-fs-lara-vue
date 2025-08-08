@@ -35,13 +35,13 @@ class Plan extends Model
         return $this->hasMany(User::class);
     }
 
-    public function subscriptions()
-    {
-        return $this->hasMany(Subscription::class);
-    }
+    // public function subscriptions()
+    // {
+    //     return $this->hasMany(Subscription::class);
+    // }
 
-    public function features()
-    {
-        return $this->hasMany(Feature::class);
-    }
+    // public function features()
+    // {
+    //     return $this->hasMany(Feature::class);
+    // }
 }
