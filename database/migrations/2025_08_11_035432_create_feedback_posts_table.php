@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('feedback_board_id')->constrained('feedback_boards')->restrictOnDelete();
             $table->foreignId('member_id')->constrained('members')->restrictOnDelete();
             $table->string('title');
-            $table->text('description');
+            $table->text('content');
             $table->enum('source', FeedbackPostSource::cases());
             $table->string('source_url')->nullable();
             $table->enum('status', FeedbackPostStatus::cases());
