@@ -37,12 +37,19 @@ class FeedbackBoard extends Model
         return $this->set_to_public_at !== null;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User,\App\Models\FeedbackBoard>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\FeedbackPost,\App\Models\FeedbackBoard>
+     */
     public function feedbacks(): HasMany
     {
-        return $this->hasMany(Feedback::class);
+        return $this->hasMany(FeedbackPost::class);
     }
+}
