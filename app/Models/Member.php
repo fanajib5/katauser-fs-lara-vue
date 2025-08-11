@@ -11,16 +11,19 @@ class Member extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'email',
+        'bio',
+        'avatar',
+        'version',
         'created_by',
         'updated_by',
         'deleted_by',
+        'disabled_by',
     ];
 
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
+        'disabled_at',
     ];
 }

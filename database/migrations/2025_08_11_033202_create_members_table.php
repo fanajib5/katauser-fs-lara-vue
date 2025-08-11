@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_id');
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
-            $table->string('email');
-            $table->string('name');
             $table->foreignId('organization_id')->constrained('organizations')->restrictOnDelete();
             $table->text('bio');
             $table->string('avatar');
@@ -24,8 +22,10 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('disabled_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
+            $table->timestampTz('disabled_at')->nullable();
         });
     }
 
