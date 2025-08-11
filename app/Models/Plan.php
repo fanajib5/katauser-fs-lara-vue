@@ -4,10 +4,11 @@ namespace App\Models;
 
 use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Plan extends Model
 {
-    use TracksChanges;
+    use TracksChanges, SoftDeletes;
 
     protected $fillable = [
         'name',
