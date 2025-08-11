@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Buat enum type di PostgreSQL
+        // 1. Buat tipe enum di PostgreSQL
         DB::statement("CREATE TYPE user_role AS ENUM ('admin', 'member', 'guest', 'user', 'developer')");
 
-        // 2. Buat tabel dengan kolom bertipe enum PostgreSQL
+        // 2. Tambahkan kolom sementara bertipe string
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', UserRole::cases())->after('name')
-                ->default(UserRole::User);
+            $table->enum('role',UserRole::cases())->after('name');
         });
 
-        // 3. Ubah kolom ke enum PostgreSQL secara manual
+        // 3. Ubah kolom jadi tipe enum PostgreSQL & set default
         DB::statement("ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role");
+        DB::statement("ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user'");
     }
 
     /**
@@ -36,6 +36,6 @@ return new class extends Migration
             $table->dropColumn('role');
         });
 
-        DB::statement("DROP TYPE user_role");
+        DB::statement("DROP TYPE IF EXISTS user_role");
     }
 };

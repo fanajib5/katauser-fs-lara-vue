@@ -52,8 +52,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('feedback_posts');
 
-        DB::statement("DROP TYPE feedback_post_source");
-        DB::statement("DROP TYPE feedback_post_status");
-        DB::statement("DROP TYPE feedback_post_type");
+        DB::statement("DROP TYPE IF EXISTS feedback_post_source");
+        DB::statement("DROP TYPE IF EXISTS feedback_post_status");
+        DB::statement("DROP TYPE IF EXISTS feedback_post_type");
     }
 };

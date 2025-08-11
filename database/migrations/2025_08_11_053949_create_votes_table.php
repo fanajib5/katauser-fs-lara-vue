@@ -39,6 +39,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('votes');
 
-        DB::statement("DROP TYPE vote_type");
+        DB::statement("DROP TYPE IF EXISTS vote_type");
     }
 };
