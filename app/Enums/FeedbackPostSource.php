@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum FeedbackPostSource: string
 {
-    case Embed = 'embed';
-    case PublicPage = 'public_page';
+    case EMBED = 'embed';
+    case PUBLICPAGE = 'public_page';
 }

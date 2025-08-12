@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum TransactionStatus: string
 {
-    case Subscription = 'subscription';
-    case Topup = 'topup';
-    case Custom = 'custom';
+    case SUBSCRIPTION = 'subscription';
+    case TOPUP = 'topup';
+    case CUSTOM = 'custom';
 }

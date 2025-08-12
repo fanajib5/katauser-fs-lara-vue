@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum PlanType: string
 {
-    case Subscription = 'subscription';
-    case Payg = 'payg';
-    case Custom = 'custom';
+    case SUBSCRIPTION = 'subscription';
+    case PAYG = 'payg';
+    case CUSTOM = 'custom';
 }

@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum FeedbackPostType: string
 {
-    case Feature = 'feature';
-    case Bug = 'bug';
-    case Improvement = 'improvement';
-    case Question = 'question';
-    case Suggestion = 'suggestion';
-    case Other = 'other';
+    case FEATURE = 'feature';
+    case BUG = 'bug';
+    case IMPROVEMENT = 'improvement';
+    case QUESTION = 'question';
+    case SUGGESTION = 'suggestion';
+    case OTHER = 'other';
 }

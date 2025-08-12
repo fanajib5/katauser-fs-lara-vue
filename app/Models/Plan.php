@@ -153,7 +153,7 @@ class Plan extends Model
      */
     public function scopeSubscription($query): Builder
     {
-        return $query->where('type', PlanType::Subscription);
+        return $query->where('type', PlanType::SUBSCRIPTION);
     }
 
     /**
@@ -164,7 +164,7 @@ class Plan extends Model
      */
     public function scopePayg($query): Builder
     {
-        return $query->where('type', PlanType::Payg);
+        return $query->where('type', PlanType::PAYG);
     }
 
     /**
@@ -175,7 +175,7 @@ class Plan extends Model
      */
     public function scopeCustom($query): Builder
     {
-        return $query->where('type', PlanType::Custom);
+        return $query->where('type', PlanType::CUSTOM);
     }
 
     /**
@@ -254,7 +254,7 @@ class Plan extends Model
      */
     public function isSubscription(): bool
     {
-        return $this->type === PlanType::Subscription;
+        return $this->type === PlanType::SUBSCRIPTION;
     }
 
     /**
@@ -262,7 +262,7 @@ class Plan extends Model
      */
     public function isPayg(): bool
     {
-        return $this->type === PlanType::Payg;
+        return $this->type === PlanType::PAYG;
     }
 
     /**
@@ -270,7 +270,7 @@ class Plan extends Model
      */
     public function isCustom(): bool
     {
-        return $this->type === PlanType::Custom;
+        return $this->type === PlanType::CUSTOM;
     }
 
     /**

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('public_id');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('transaction_id')->constrained('transactions');
-            $table->boolean('active_status')->default(false);
+            $table->boolean('is_active')->default(false);
             $table->timestampTz('start_date')->nullable();
             $table->timestampTz('end_date')->nullable();
             $table->decimal('balance', 12, 2)->nullable();
