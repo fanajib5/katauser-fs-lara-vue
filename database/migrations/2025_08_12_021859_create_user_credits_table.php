@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('transaction_id')->constrained('transactions')->cascadeOnDelete();
             $table->integer('change_amount')->comment('positif untuk penambahan, negatif untuk pengurangan');
             $table->integer('balance_after')->comment('sisa saldo credit setelah perubahan');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestampTz('created_at')->default(now());
         });
     }

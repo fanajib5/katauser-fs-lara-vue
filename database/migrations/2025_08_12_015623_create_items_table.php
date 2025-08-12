@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\PlanType;
+use App\Enums\ItemType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -13,18 +13,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE plan_type AS ENUM ('subscription', 'payg', 'custom')");
+        DB::statement("CREATE TYPE item_type AS ENUM ('plan', 'credit', 'custom_package')");
 
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('plan_id')->nullable()->constrained('plans');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->enum('type', PlanType::cases());
-            $table->decimal('price', 10, 2);
-            $table->string('duration_days')->nullable();
-            $table->decimal('included_credits', 10, 2)->nullable();
-            $table->boolean('is_active')->default(false);
-            $table->jsonb('features');
+            $table->decimal('price', 12, 2);
+            $table->enum('type', ItemType::cases());
             $table->unsignedInteger('version')->default(1);
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
@@ -33,8 +30,8 @@ return new class extends Migration
             $table->softDeletesTz();
         });
 
-        DB::statement("ALTER TABLE plans ALTER COLUMN type TYPE plan_type USING type::plan_type");
-        DB::statement("ALTER TABLE plans ALTER COLUMN type SET DEFAULT 'subscription'");
+        DB::statement("ALTER TABLE transaction_items ALTER COLUMN type TYPE item_type USING type::item_type");
+        DB::statement("ALTER TABLE transaction_items ALTER COLUMN type SET DEFAULT 'plan'");
     }
 
     /**
@@ -42,8 +39,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('items');
 
-        DB::statement('DROP TYPE IF EXISTS plan_type');
+        DB::statement('DROP TYPE IF EXISTS item_type');
     }
 };

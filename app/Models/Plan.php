@@ -14,9 +14,11 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'description',
+        'type',
         'price',
-        'duration',
-        'status',
+        'duration_days',
+        'included_credits',
+        'is_active',
         'features',
         'version',
         'created_by',
@@ -33,7 +35,7 @@ class Plan extends Model
     protected function casts(): array
     {
         return [
-            'status' => 'boolean',
+            'is_active' => 'boolean',
             'features' => 'array',
         ];
     }
@@ -44,11 +46,6 @@ class Plan extends Model
             get: fn ($value) => json_decode($value, true),
             set: fn ($value) => json_encode($value),
         );
-    }
-
-    public function users()
-    {
-        return $this->hasMany(User::class);
     }
 
     // public function subscriptions()

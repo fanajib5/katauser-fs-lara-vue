@@ -24,8 +24,11 @@ class Subscription extends Model
         'updated_at',
     ];
 
-    protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+        ];
+    }
 }

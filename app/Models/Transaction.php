@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\TransactionStatus;
-use App\Enums\TransactionType;
 use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -14,17 +13,19 @@ class Transaction extends Model
     use TracksChanges, SoftDeletes;
 
     protected $fillable = [
-        'public_id',
+        'transaction_code',
         'user_id',
         'type',
         'plan_id',
         'status',
-        'amount',
+        'payment_method',
+        'total_amount',
+        'currency',
         'custom_package_details',
         'credit_amount',
-        'payment_reference',
-        'payment_details',
+        'metadata',
         'paid_at',
+        'expires_at',
     ];
 
     protected $hidden = [
@@ -32,13 +33,15 @@ class Transaction extends Model
         'updated_at',
     ];
 
-    protected $casts = [
-        'status' => TransactionStatus::class,
-        'type' => TransactionType::class,
-        'payment_details' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'status' => TransactionStatus::class,
+            'metadata' => 'array',
+        ];
+    }
 
-    protected function payment_details(): Attribute
+    protected function metadata(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => json_decode($value, true),

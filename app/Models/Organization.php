@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Organization extends Model
 {
-    use TracksChanges;
+    use HasFactory, TracksChanges;
 
     protected $fillable = [
         'name',
@@ -21,10 +22,6 @@ class Organization extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-    ];
-
-    protected $casts = [
-        'urls' => 'array',
     ];
 
     protected $dates = [
