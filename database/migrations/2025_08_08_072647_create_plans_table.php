@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('duration');
             $table->boolean('status');
+            $table->jsonb('features');
             $table->unsignedInteger('version')->default(1);
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();

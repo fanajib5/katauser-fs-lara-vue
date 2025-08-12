@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\TracksChanges;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,14 +17,11 @@ class Plan extends Model
         'price',
         'duration',
         'status',
+        'features',
         'version',
         'created_by',
         'updated_by',
         'deleted_by'
-    ];
-
-    protected $casts = [
-        'status' => 'boolean',
     ];
 
     protected $hidden = [
@@ -31,6 +29,22 @@ class Plan extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => 'boolean',
+            'features' => 'array',
+        ];
+    }
+
+    protected function features(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => json_decode($value, true),
+            set: fn ($value) => json_encode($value),
+        );
+    }
 
     public function users()
     {
