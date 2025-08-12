@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_id');
             $table->foreignId('transaction_id')->constrained('transactions')->cascadeOnDelete();
-            $table->enum('type', ItemType::cases());
             $table->foreignId('item_id')->constrained('items')->cascadeOnDelete();
             $table->unsignedInteger('quantity');
             $table->decimal('price', 12, 2);

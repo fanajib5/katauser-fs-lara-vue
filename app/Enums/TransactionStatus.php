@@ -4,7 +4,9 @@ namespace App\Enums;
 
 enum TransactionStatus: string
 {
-    case SUBSCRIPTION = 'subscription';
-    case TOPUP = 'topup';
-    case CUSTOM = 'custom';
+    case PENDING = 'pending';
+    case PAID = 'paid';
+    case FAILED = 'failed';
+    case CANCELLED = 'cancelled';
+    case REFUNDED = 'refunded';
 }

@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOneThrough};
 
 class Subscription extends Model
 {
@@ -22,14 +21,12 @@ class Subscription extends Model
         'end_date',
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
-
     protected function casts(): array
     {
         return [
+            'public_id' => 'string',
+            'user_id' => 'integer',
+            'transaction_id' => 'integer',
             'is_active' => 'boolean',
             'balance' => 'decimal:2',
             'start_date' => 'datetime',
@@ -42,31 +39,64 @@ class Subscription extends Model
     /**
      * Get the user that owns this subscription.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User,\App\Models\Subscription>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+        // Kolom FK: user_id
     }
 
     /**
      * Get the transaction that created this subscription.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Transaction,\App\Models\Subscription>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+        // Kolom FK: transaction_id
     }
 
+    // ========== HAS ONE THROUGH RELATIONS ==========
+
     /**
-     * Get the plan through transaction.
+     * Get the plan through the transaction.
+     * Subscription -> Transaction -> Plan
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough<\App\Models\Plan,\App\Models\Transaction,\App\Models\Subscription>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
      */
     public function plan(): HasOneThrough
     {
-        return $this->hasOneThrough(Plan::class, Transaction::class, 'id', 'id', 'transaction_id', 'plan_id');
+        // Perbaiki definisi relasi HasOneThrough
+        // Param 1: Model akhir (Plan)
+        // Param 2: Model perantara (Transaction)
+        // Param 3: FK di tabel perantara (subscriptions) yang mengacu ke tabel saat ini (subscriptions) -> 'id' (PK subscriptions)
+        // Param 4: FK di tabel akhir (plans) yang mengacu ke tabel perantara (transactions) -> 'plan_id'
+        // Param 5: Local key di tabel saat ini (subscriptions) -> 'transaction_id'
+        // Param 6: Local key di tabel perantara (transactions) -> 'id' (PK transactions)
+        return $this->hasOneThrough(
+            Plan::class,
+            Transaction::class,
+            'id', // FK di subscriptions (PK subscriptions.id)
+            'id', // FK di plans (PK plans.id)
+            'transaction_id', // Local key di subscriptions (subscriptions.transaction_id)
+            'plan_id' // Local key di transactions (transactions.plan_id)
+        );
+        // Ini akan mengambil Plan yang terkait dengan Transaction yang membuat Subscription ini.
+    }
+
+    // ========== HAS MANY RELATIONS ==========
+
+    /**
+     * Get the user credits associated with this subscription.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function userCredits(): HasMany
+    {
+        return $this->hasMany(UserCredit::class, 'subscription_id');
+        // Hanya tambahkan jika kolom subscription_id benar-benar ada di tabel user_credits
     }
 
     // ========== SCOPES ==========
@@ -79,7 +109,7 @@ class Subscription extends Model
      */
     public function scopeActive($query): Builder
     {
-        return $query->where('active_status', true);
+        return $query->where('is_active', true);
     }
 
     /**
@@ -90,7 +120,7 @@ class Subscription extends Model
      */
     public function scopeInactive($query): Builder
     {
-        return $query->where('active_status', false);
+        return $query->where('is_active', false);
     }
 
     /**
@@ -112,38 +142,63 @@ class Subscription extends Model
      */
     public function scopeCurrent($query): Builder
     {
-        return $query->where('end_date', '>', now())
-            ->orWhereNull('end_date');
+        // Perbaiki logika: Subscription aktif DAN (belum berakhir ATAU tidak ada tanggal akhir)
+        return $query->where('is_active', true)
+                        ->where(function ($q) {
+                            $q->where('end_date', '>', now())
+                            ->orWhereNull('end_date');
+                        });
     }
 
     // ========== ACCESSORS ==========
 
     /**
-        * Check if subscription is active.
-        */
-    public function getIsActiveAttribute(): bool
+     * Check if subscription is active and not expired.
+     * (Perbaiki logika untuk mencocokkan scope)
+     *
+     * @return bool
+     */
+    public function isActive(): bool
     {
-        return $this->active_status &&
+        // Perbaiki: kolom yang benar adalah 'is_active', dan tambahkan pengecekan tanggal
+        return $this->attributes['is_active'] &&
                 ($this->end_date === null || $this->end_date->isFuture());
     }
 
     /**
-        * Check if subscription is expired.
-        */
-    public function getIsExpiredAttribute(): bool
+     * Check if subscription is expired.
+     *
+     * @return bool
+     */
+    public function isExpired(): bool
     {
-        return $this->end_date?->isPast();
+        // Perbaiki: Subscription kadaluarsa jika end_date ada dan di masa lalu
+        return $this->end_date !== null && $this->end_date->isPast();
     }
 
     /**
-        * Get days remaining.
-        */
-    public function getDaysRemainingAttribute(): ?int
+     * Get days remaining until expiration.
+     *
+     * @return int|null
+     */
+    public function daysRemaining(): ?int
     {
         if (!$this->end_date) {
             return null;
         }
 
-        return max(0, now()->diffInDays($this->end_date, false));
+        $days = now()->diffInDays($this->end_date, false); // false untuk mendapatkan hasil negatif jika sudah lewat
+        return max(0, $days); // Jika sudah lewat, kembalikan 0
+    }
+
+    /**
+     * Check if subscription is currently active (active and not expired).
+     * (Accessor baru untuk logika yang lebih jelas)
+     *
+     * @return bool
+     */
+    public function isCurrentlyActive(): bool
+    {
+            return $this->is_active && ($this->end_date === null || $this->end_date->isFuture());
     }
 }

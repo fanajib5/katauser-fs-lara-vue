@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Plan extends Model
@@ -36,20 +36,6 @@ class Plan extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'created_by',
-        'updated_by',
-        'deleted_by',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -61,8 +47,10 @@ class Plan extends Model
             'price' => 'decimal:2',
             'included_credits' => 'decimal:2',
             'is_active' => 'boolean',
-            'features' => 'array',
             'version' => 'integer',
+            'created_by' => 'integer',
+            'updated_by' => 'integer',
+            'deleted_by' => 'integer',
         ];
     }
 
@@ -77,36 +65,74 @@ class Plan extends Model
         );
     }
 
+    // ========== BELONGS TO RELATIONS ==========
+
+    /**
+     * Get the user who created the plan.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+        // Kolom FK: created_by
+    }
+
+    /**
+     * Get the user who last updated the plan.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+        // Kolom FK: updated_by
+    }
+
+    /**
+     * Get the user who deleted the plan.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+        // Kolom FK: deleted_by (nullable)
+    }
+
     // ========== HAS MANY RELATIONS ==========
 
     /**
      * Get all organizations using this plan.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Organization,\App\Models\Plan>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function organizations(): HasMany
     {
         return $this->hasMany(Organization::class);
+        // Kolom FK di Organization: plan_id
     }
 
     /**
      * Get all transactions for this plan.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Transaction,\App\Models\Plan>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+        // Kolom FK di Transaction: plan_id (nullable)
     }
 
     /**
      * Get all items associated with this plan.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Item,\App\Models\Plan>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);
+        // Kolom FK di Item: plan_id (nullable)
     }
 
     // ========== SCOPE METHODS ==========
@@ -207,6 +233,8 @@ class Plan extends Model
 
     /**
      * Get formatted price with currency.
+     *
+     * @return string
      */
     public function getFormattedPriceAttribute(): string
     {
@@ -215,6 +243,8 @@ class Plan extends Model
 
     /**
      * Get formatted included credits.
+     *
+     * @return string
      */
     public function getFormattedCreditsAttribute(): string
     {
@@ -227,6 +257,8 @@ class Plan extends Model
 
     /**
      * Get duration in human readable format.
+     *
+     * @return string|null
      */
     public function getFormattedDurationAttribute(): ?string
     {
@@ -251,6 +283,8 @@ class Plan extends Model
 
     /**
      * Check if plan is subscription type.
+     *
+     * @return bool
      */
     public function isSubscription(): bool
     {
@@ -259,6 +293,8 @@ class Plan extends Model
 
     /**
      * Check if plan is pay-as-you-go type.
+     *
+     * @return bool
      */
     public function isPayg(): bool
     {
@@ -267,6 +303,8 @@ class Plan extends Model
 
     /**
      * Check if plan is custom type.
+     *
+     * @return bool
      */
     public function isCustom(): bool
     {
@@ -275,6 +313,9 @@ class Plan extends Model
 
     /**
      * Check if plan has specific feature.
+     *
+     * @param string $feature
+     * @return bool
      */
     public function hasFeature(string $feature): bool
     {
@@ -282,7 +323,7 @@ class Plan extends Model
 
         if (is_array($features)) {
             return in_array($feature, $features) ||
-                   (isset($features[$feature]) && $features[$feature] === true);
+                    (isset($features[$feature]) && $features[$feature] === true);
         }
 
         return false;
@@ -326,6 +367,8 @@ class Plan extends Model
 
     /**
      * Calculate total organizations using this plan.
+     *
+     * @return int
      */
     public function getTotalOrganizations(): int
     {
@@ -334,34 +377,44 @@ class Plan extends Model
 
     /**
      * Calculate total revenue from this plan.
+     *
+     * @return float
      */
     public function getTotalRevenue(): float
     {
         return $this->transactions()
-                   ->where('status', 'paid')
-                   ->sum('total_amount');
+                    ->where('status', 'paid')
+                    ->sum('total_amount');
     }
 
     /**
      * Get active organizations count.
+     *
+     * @return int
      */
     public function getActiveOrganizationsCount(): int
     {
         return $this->organizations()
-                   ->whereNull('deleted_at')
-                   ->count();
+                    ->whereNull('deleted_at')
+                    ->count();
     }
 
     /**
      * Check if plan can be deleted.
+     *
+     * @return bool
      */
     public function canBeDeleted(): bool
     {
+        // Pertimbangkan apakah memeriksa 'is_active' juga relevan
+        // return $this->getActiveOrganizationsCount() === 0 && !$this->is_active;
         return $this->getActiveOrganizationsCount() === 0;
     }
 
     /**
      * Activate the plan.
+     *
+     * @return bool
      */
     public function activate(): bool
     {
@@ -370,6 +423,8 @@ class Plan extends Model
 
     /**
      * Deactivate the plan.
+     *
+     * @return bool
      */
     public function deactivate(): bool
     {
@@ -378,6 +433,9 @@ class Plan extends Model
 
     /**
      * Duplicate plan with new name.
+     *
+     * @param string $newName
+     * @return self
      */
     public function duplicate(string $newName): self
     {

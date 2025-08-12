@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\FeedbackPostSource;
-use App\Enums\FeedbackPostStatus;
-use App\Enums\FeedbackPostType;
-use App\Enums\VoteType;
+use App\Enums\{FeedbackPostSource, FeedbackPostStatus, FeedbackPostType, VoteType};
 use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,12 +32,6 @@ class FeedbackPost extends Model
         'deleted_by',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     protected function casts(): array
     {
         return [
@@ -48,6 +39,14 @@ class FeedbackPost extends Model
             'source' => FeedbackPostSource::class,
             'status' => FeedbackPostStatus::class,
             'type' => FeedbackPostType::class,
+            'metadata' => 'array',
+            'public_id' => 'string',
+            'feedback_board_id' => 'integer',
+            'member_id' => 'integer',
+            'version' => 'integer',
+            'created_by' => 'integer',
+            'updated_by' => 'integer',
+            'deleted_by' => 'integer',
         ];
     }
 
@@ -71,6 +70,36 @@ class FeedbackPost extends Model
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+    }
+
+    /**
+     * Get the user who created the feedback board.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User,\App\Models\FeedbackPost>
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who last updated the feedback board.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User,\App\Models\FeedbackPost>
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Get the user who deleted the feedback board.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User,\App\Models\FeedbackPost>
+     */
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 
     // ========== HAS MANY RELATIONS ==========
@@ -202,7 +231,7 @@ class FeedbackPost extends Model
     /**
      * Get total vote count.
      */
-    public function getTotalVotesAttribute(): int
+    public function totalVotes(): int
     {
         return $this->upvotes()->count() - $this->downvotes()->count();
     }
@@ -210,7 +239,7 @@ class FeedbackPost extends Model
     /**
      * Check if post is public.
      */
-    public function getIsPublicAttribute(): bool
+    public function isPublic(): bool
     {
         return $this->set_to_public_at !== null;
     }

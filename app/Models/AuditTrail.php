@@ -275,7 +275,7 @@ class AuditTrail extends Model
         ?array $after = null
     ): self {
         return self::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'id' => (string) Str::uuid(),
             'model_type' => get_class($model),
             'model_id' => $model->getKey(),
             'user_id' => $userId ?? auth()?->id(),

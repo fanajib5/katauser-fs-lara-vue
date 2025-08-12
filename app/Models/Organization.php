@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasManyThrough};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Organization extends Model
@@ -30,20 +29,6 @@ class Organization extends Model
         'deleted_by',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'created_by',
-        'updated_by',
-        'deleted_by',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     protected $appends = [
         'version',
     ];
@@ -51,8 +36,13 @@ class Organization extends Model
     protected function casts(): array
     {
         return [
+            'public_id' => 'string',
+            'plan_id' => 'integer',
             'domain_verified_at' => 'datetime',
-            'urls' => 'array',
+            'version' => 'integer',
+            'created_by' => 'integer',
+            'updated_by' => 'integer',
+            'deleted_by' => 'integer',
         ];
     }
 
@@ -69,11 +59,45 @@ class Organization extends Model
     /**
      * Get the plan that owns the organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\Plan>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
+        // Kolom FK: plan_id
+    }
+
+    /**
+     * Get the user who created the organization.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+        // Kolom FK: created_by
+    }
+
+    /**
+     * Get the user who last updated the organization.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+        // Kolom FK: updated_by
+    }
+
+    /**
+     * Get the user who deleted the organization.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+        // Kolom FK: deleted_by (nullable)
     }
 
     // ========== HAS MANY RELATIONS ==========
@@ -81,52 +105,68 @@ class Organization extends Model
     /**
      * Get all users associated with this organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\User>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+        // Kolom FK di User: organization_id
     }
 
     /**
      * Get all members of this organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Member>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function members(): HasMany
     {
         return $this->hasMany(Member::class);
+        // Kolom FK di Member: organization_id
     }
 
     /**
      * Get all feedback boards for this organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\FeedbackBoard>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function feedbackBoards(): HasMany
     {
         return $this->hasMany(FeedbackBoard::class);
+        // Kolom FK di FeedbackBoard: organization_id
     }
 
     /**
      * Get all roadmap items for this organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\RoadmapItem>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function roadmapItems(): HasMany
     {
         return $this->hasMany(RoadmapItem::class);
+        // Kolom FK di RoadmapItem: organization_id
     }
 
     /**
      * Get all changelogs for this organization.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Changelog>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function changelogs(): HasMany
     {
         return $this->hasMany(Changelog::class);
+        // Kolom FK di Changelog: organization_id
     }
+
+    /**
+     * Get all feedback posts for this organization.
+     *
+     * @return HasManyThrough
+     */
+    public function feedbackPosts(): HasManyThrough
+    {
+        return $this->hasManyThrough(FeedbackPost::class, FeedbackBoard::class);
+    }
+
 
     // ========== SCOPES ==========
 
@@ -157,6 +197,8 @@ class Organization extends Model
 
     /**
      * Get the organization's full URL.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function fullUrl(): Attribute
     {
@@ -173,6 +215,8 @@ class Organization extends Model
 
     /**
      * Check if organization has verified custom domain.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function hasVerifiedDomain(): Attribute
     {

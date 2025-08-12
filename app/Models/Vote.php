@@ -23,16 +23,15 @@ class Vote extends Model
         'deleted_by'
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     protected function casts(): array
     {
         return [
+            'feedback_post_id' => 'integer',
+            'member_id' => 'integer',
             'type' => VoteType::class,
+            'created_by' => 'integer',
+            'updated_by' => 'integer',
+            'deleted_by' => 'integer',
         ];
     }
 
@@ -41,21 +40,56 @@ class Vote extends Model
     /**
      * Get the feedback post that owns this vote.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\FeedbackPost,\App\Models\Vote>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function feedbackPost(): BelongsTo
     {
         return $this->belongsTo(FeedbackPost::class);
+        // Kolom FK: feedback_post_id
     }
 
     /**
      * Get the member who cast this vote.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Member,\App\Models\Vote>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+        // Kolom FK: member_id
+    }
+
+    /**
+     * Get the user who created this vote record.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+        // Kolom FK: created_by
+    }
+
+    /**
+     * Get the user who last updated this vote record.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+        // Kolom FK: updated_by
+    }
+
+    /**
+     * Get the user who deleted this vote record.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+        // Kolom FK: deleted_by (nullable)
     }
 
     // ========== SCOPES ==========
@@ -68,7 +102,7 @@ class Vote extends Model
      */
     public function scopeUpvotes($query): Builder
     {
-        return $query->where('type', 'upvote');
+        return $query->where('type', VoteType::UPVOTE); // Gunakan enum
     }
 
     /**
@@ -79,7 +113,7 @@ class Vote extends Model
      */
     public function scopeDownvotes($query): Builder
     {
-        return $query->where('type', 'downvote');
+        return $query->where('type', VoteType::DOWNVOTE); // Gunakan enum
     }
 
     // ========== ACCESSORS ==========
@@ -91,7 +125,7 @@ class Vote extends Model
      */
     public function getIsUpvoteAttribute(): bool
     {
-        return $this->type === VoteType::UPVOTE->value;
+        return $this->type === VoteType::UPVOTE; // Bandingkan dengan enum, bukan value
     }
 
     /**
@@ -101,6 +135,6 @@ class Vote extends Model
      */
     public function getIsDownvoteAttribute(): bool
     {
-        return $this->type === VoteType::DOWNVOTE->value;
+        return $this->type === VoteType::DOWNVOTE; // Bandingkan dengan enum, bukan value
     }
 }

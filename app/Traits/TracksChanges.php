@@ -9,6 +9,23 @@ use Illuminate\Support\Facades\Auth;
 
 trait TracksChanges
 {
+    /**
+     * Field yang tidak akan dicatat perubahannya.
+     *
+     * @return string[]
+     */
+    protected function auditIgnore(): array
+    {
+        return [
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'created_by',
+            'updated_by',
+            'deleted_by',
+        ];
+    }
+
     public static function bootTracksChanges(): void
     {
         static::creating(function ($model) {
@@ -26,8 +43,8 @@ trait TracksChanges
 
             // Simpan versi lama ke audit trail
             if ($model->isDirty()) {
-                $original = $model->getOriginal();
-                $changed = $model->getDirty();
+                $original = $model->getOriginal()->except($this->auditIgnore());
+                $changed = $model->getDirty()->except($this->auditIgnore());
 
                AuditTrail::create([
                     'model_type' => get_class($model),
