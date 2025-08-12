@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('audit_trails', function (Blueprint $table) {
-            $table->uuid();
+            $table->uuid('id')->primary();
             $table->string('model_type');
             $table->unsignedBigInteger('model_id');
             $table->foreignId('user_id')->nullable()->constrained('users')->noActionOnDelete();

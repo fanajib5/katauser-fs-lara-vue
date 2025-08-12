@@ -5,18 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class AuditTrail extends Model
 {
     /**
-     * The table associated with the model.
-     */
-    protected $table = 'audit_trails';
-
-    /**
      * The primary key for the model.
      */
-    protected $primaryKey = 'uuid';
+    protected $primaryKey = 'id';
 
     /**
      * The data type of the primary key.
@@ -35,20 +31,10 @@ class AuditTrail extends Model
     public $timestamps = false;
 
     /**
-     * The attributes that should be cast.
-     */
-    protected $casts = [
-        'uuid' => 'string',
-        'before' => 'array',
-        'after' => 'array',
-        'created_at' => 'datetime',
-    ];
-
-    /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'uuid',
+        'id',
         'model_type',
         'model_id',
         'user_id',
@@ -56,6 +42,19 @@ class AuditTrail extends Model
         'after',
         'created_at',
     ];
+
+    public function casts(): array
+    {
+        return [
+            'id' => (string) Str::uuid(),
+            'model_type' => 'string',
+            'model_id' => 'integer',
+            'user_id' => 'integer',
+            'before' => 'array',
+            'after' => 'array',
+            'created_at' => 'datetime',
+        ];
+    }
 
     // ========== BELONGS TO RELATIONS ==========
 
