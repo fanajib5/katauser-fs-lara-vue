@@ -4,11 +4,12 @@ namespace App\Traits;
 
 use App\Models\AuditTrail;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
 trait TracksChanges
 {
-    public static function bootTracksChanges()
+    public static function bootTracksChanges(): void
     {
         static::creating(function ($model) {
             if (Auth::check()) {
@@ -48,17 +49,17 @@ trait TracksChanges
         });
     }
 
-    public function creator(): ?User
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updater(): ?User
+    public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function deleter(): ?User
+    public function deleter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
