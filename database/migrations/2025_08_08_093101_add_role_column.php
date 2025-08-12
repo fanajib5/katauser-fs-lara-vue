@@ -14,16 +14,21 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Buat tipe enum di PostgreSQL
-        DB::statement("CREATE TYPE user_role AS ENUM ('admin', 'member', 'guest', 'user', 'developer')");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE user_role AS ENUM ('admin', 'member', 'guest', 'user', 'developer')");
+        }
 
         // 2. Tambahkan kolom sementara bertipe string
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role',UserRole::cases())->after('name');
+            $table->enum('role',UserRole::cases())->after('name')->default(UserRole::GUEST->value);
         });
 
         // 3. Ubah kolom jadi tipe enum PostgreSQL & set default
-        DB::statement("ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role");
-        DB::statement("ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user'");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role");
+            DB::statement("ALTER TABLE users ALTER COLUMN role SET DEFAULT 'user'");
+        }
     }
 
     /**
@@ -36,6 +41,8 @@ return new class extends Migration
             $table->dropColumn('role');
         });
 
-        DB::statement("DROP TYPE IF EXISTS user_role");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("DROP TYPE IF EXISTS user_role");
+        }
     }
 };

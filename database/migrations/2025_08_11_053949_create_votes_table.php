@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE vote_type AS ENUM ('upvote', 'downvote')");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE vote_type AS ENUM ('upvote', 'downvote')");
+        }
 
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
@@ -29,7 +32,10 @@ return new class extends Migration
             $table->index(['feedback_post_id', 'member_id'], 'votes_feedback_post_id_member_id_index');
         });
 
-        DB::statement("ALTER TABLE votes ALTER COLUMN type TYPE vote_type USING type::vote_type");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE votes ALTER COLUMN type TYPE vote_type USING type::vote_type");
+        }
     }
 
     /**
@@ -39,6 +45,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('votes');
 
-        DB::statement("DROP TYPE IF EXISTS vote_type");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("DROP TYPE IF EXISTS vote_type");
+        }
     }
 };

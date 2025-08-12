@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE transaction_status AS ENUM ('pending', 'paid', 'failed', 'cancelled', 'refunded')");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE transaction_status AS ENUM ('pending', 'paid', 'failed', 'cancelled', 'refunded')");
+        }
 
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
@@ -33,8 +36,11 @@ return new class extends Migration
             $table->timestampsTz();
         });
 
-        DB::statement("ALTER TABLE transactions ALTER COLUMN status TYPE transaction_status USING status::transaction_status");
-        DB::statement("ALTER TABLE transactions ALTER COLUMN status SET DEFAULT 'pending'");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE transactions ALTER COLUMN status TYPE transaction_status USING status::transaction_status");
+            DB::statement("ALTER TABLE transactions ALTER COLUMN status SET DEFAULT 'pending'");
+        }
     }
 
     /**
@@ -44,6 +50,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('transactions');
 
-        DB::statement('DROP TYPE IF EXISTS transaction_status');
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP TYPE IF EXISTS transaction_status');
+        }
     }
 };

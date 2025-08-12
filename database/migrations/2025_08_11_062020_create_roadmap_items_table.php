@@ -13,7 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE roadmap_item_status AS ENUM ('draft', 'planned', 'archived', 'completed', 'in_progress', 'cancelled')");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE roadmap_item_status AS ENUM ('draft', 'planned', 'archived', 'completed', 'in_progress', 'cancelled')");
+        }
 
         Schema::create('roadmap_items', function (Blueprint $table) {
             $table->id();
@@ -31,8 +33,11 @@ return new class extends Migration
             $table->softDeletesTz();
         });
 
-        DB::statement("ALTER TABLE roadmap_items ALTER COLUMN status TYPE roadmap_item_status USING status::roadmap_item_status");
-        DB::statement("ALTER TABLE roadmap_items ALTER COLUMN status SET DEFAULT 'draft'");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE roadmap_items ALTER COLUMN status TYPE roadmap_item_status USING status::roadmap_item_status");
+            DB::statement("ALTER TABLE roadmap_items ALTER COLUMN status SET DEFAULT 'draft'");
+        }
     }
 
     /**
@@ -42,6 +47,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('roadmap_items');
 
-        DB::statement("DROP TYPE IF EXISTS roadmap_item_status");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("DROP TYPE IF EXISTS roadmap_item_status");
+        }
     }
 };

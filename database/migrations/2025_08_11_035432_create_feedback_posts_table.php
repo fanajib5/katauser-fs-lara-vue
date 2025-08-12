@@ -15,9 +15,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE feedback_post_source AS ENUM ('embed', 'public_page')");
-        DB::statement("CREATE TYPE feedback_post_status AS ENUM ('open', 'planned', 'completed', 'in_progress', 'archived', 'closed')");
-        DB::statement("CREATE TYPE feedback_post_type AS ENUM ('feature', 'bug', 'improvement', 'question', 'suggestion', 'other')");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE feedback_post_source AS ENUM ('embed', 'public_page')");
+            DB::statement("CREATE TYPE feedback_post_status AS ENUM ('open', 'planned', 'completed', 'in_progress', 'archived', 'closed')");
+            DB::statement("CREATE TYPE feedback_post_type AS ENUM ('feature', 'bug', 'improvement', 'question', 'suggestion', 'other')");
+        }
 
         Schema::create('feedback_posts', function (Blueprint $table) {
             $table->id();
@@ -40,9 +43,12 @@ return new class extends Migration
             $table->softDeletesTz();
         });
 
-        DB::statement("ALTER TABLE feedback_posts ALTER COLUMN source TYPE feedback_post_source USING source::feedback_post_source");
-        DB::statement("ALTER TABLE feedback_posts ALTER COLUMN status TYPE feedback_post_status USING status::feedback_post_status");
-        DB::statement("ALTER TABLE feedback_posts ALTER COLUMN type TYPE feedback_post_type USING type::feedback_post_type");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE feedback_posts ALTER COLUMN source TYPE feedback_post_source USING source::feedback_post_source");
+            DB::statement("ALTER TABLE feedback_posts ALTER COLUMN status TYPE feedback_post_status USING status::feedback_post_status");
+            DB::statement("ALTER TABLE feedback_posts ALTER COLUMN type TYPE feedback_post_type USING type::feedback_post_type");
+        }
     }
 
     /**
@@ -52,8 +58,11 @@ return new class extends Migration
     {
         Schema::dropIfExists('feedback_posts');
 
-        DB::statement("DROP TYPE IF EXISTS feedback_post_source");
-        DB::statement("DROP TYPE IF EXISTS feedback_post_status");
-        DB::statement("DROP TYPE IF EXISTS feedback_post_type");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("DROP TYPE IF EXISTS feedback_post_source");
+            DB::statement("DROP TYPE IF EXISTS feedback_post_status");
+            DB::statement("DROP TYPE IF EXISTS feedback_post_type");
+        }
     }
 };

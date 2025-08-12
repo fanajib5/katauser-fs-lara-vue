@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE TYPE item_type AS ENUM ('plan', 'credit', 'custom_package')");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE TYPE item_type AS ENUM ('plan', 'credit', 'custom_package')");
+        }
 
         Schema::create('items', function (Blueprint $table) {
             $table->id();
@@ -30,8 +33,11 @@ return new class extends Migration
             $table->softDeletesTz();
         });
 
-        DB::statement("ALTER TABLE items ALTER COLUMN type TYPE item_type USING type::item_type");
-        DB::statement("ALTER TABLE items ALTER COLUMN type SET DEFAULT 'plan'");
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("ALTER TABLE items ALTER COLUMN type TYPE item_type USING type::item_type");
+            DB::statement("ALTER TABLE items ALTER COLUMN type SET DEFAULT 'plan'");
+        }
     }
 
     /**
@@ -41,6 +47,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('items');
 
-        DB::statement('DROP TYPE IF EXISTS item_type');
+        // Only run ENUM type creation for PostgreSQL
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP TYPE IF EXISTS item_type');
+        }
     }
 };
