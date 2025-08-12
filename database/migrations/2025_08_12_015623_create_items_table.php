@@ -30,8 +30,8 @@ return new class extends Migration
             $table->softDeletesTz();
         });
 
-        DB::statement("ALTER TABLE transaction_items ALTER COLUMN type TYPE item_type USING type::item_type");
-        DB::statement("ALTER TABLE transaction_items ALTER COLUMN type SET DEFAULT 'plan'");
+        DB::statement("ALTER TABLE items ALTER COLUMN type TYPE item_type USING type::item_type");
+        DB::statement("ALTER TABLE items ALTER COLUMN type SET DEFAULT 'plan'");
     }
 
     /**
