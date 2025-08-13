@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\PlanType;
+use App\Enums\{PlanType, TransactionStatus};
 use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -383,7 +383,7 @@ class Plan extends Model
     public function getTotalRevenue(): float
     {
         return $this->transactions()
-                    ->where('status', 'paid')
+                    ->where('status', TransactionStatus::PAID)
                     ->sum('total_amount');
     }
 
