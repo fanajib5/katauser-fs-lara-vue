@@ -229,10 +229,10 @@ class Transaction extends Model
             return 'topup';
         } elseif ($this->transactionItems->isNotEmpty()) {
             // Cek item pertama sebagai indikator kasar
-            $firstItem = $this->transactionItems->item()->first();
-            // Asumsikan TransactionItem memiliki relasi ke Item atau kolom type
-            return $firstItem->type ?? 'unknown';
-            // return 'item_purchase'; // Placeholder
+            $firstTransactionItem = $this->transactionItems->first();
+            if ($firstTransactionItem?->item) {
+                return $firstTransactionItem->item->type->value ?? 'unknown';
+            }
         }
         return 'unknown';
     }
