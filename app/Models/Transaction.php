@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\TransactionStatus;
-use App\Traits\TracksChanges;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 
 class Transaction extends Model
 {
-    use TracksChanges;
-
     protected $fillable = [
         'transaction_code',
         'user_id',
