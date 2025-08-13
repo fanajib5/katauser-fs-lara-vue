@@ -78,7 +78,7 @@ class AuditTrail extends Model
      */
     public function auditable(): MorphTo
     {
-        return $this->morphTo('model', 'model_type', 'model_id');
+        return $this->morphTo('auditable', 'model_type', 'model_id');
     }
 
     // ========== SCOPE METHODS ==========
