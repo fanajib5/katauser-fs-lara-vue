@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('user_credits', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('user_id')->constrained('users')->cascadecascadeOnDelete();
-            $table->foreignId('transaction_id')->constrained('transactions')->cascadecascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('transaction_id')->constrained('transactions')->cascadeOnDelete();
             $table->integer('change_amount')->comment('positif untuk penambahan, negatif untuk pengurangan');
             $table->integer('balance_after')->comment('sisa saldo credit setelah perubahan');
             $table->text('description')->nullable();

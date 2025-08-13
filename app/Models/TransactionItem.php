@@ -20,6 +20,7 @@ class TransactionItem extends Model
         'quantity',
         'price',
         'subtotal',
+        'version',
         'created_by',
         'updated_by',
         'deleted_by',
