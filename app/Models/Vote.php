@@ -102,7 +102,7 @@ class Vote extends Model
      */
     public function scopeUpvotes($query): Builder
     {
-        return $query->where('type', VoteType::UPVOTE); // Gunakan enum
+        return $query->where('type', VoteType::UP_VOTE);
     }
 
     /**
@@ -113,7 +113,7 @@ class Vote extends Model
      */
     public function scopeDownvotes($query): Builder
     {
-        return $query->where('type', VoteType::DOWNVOTE); // Gunakan enum
+        return $query->where('type', VoteType::DOWN_VOTE);
     }
 
     // ========== ACCESSORS ==========
@@ -125,7 +125,7 @@ class Vote extends Model
      */
     public function getIsUpvoteAttribute(): bool
     {
-        return $this->type === VoteType::UPVOTE; // Bandingkan dengan enum, bukan value
+        return $this->type === VoteType::UP_VOTE; // Bandingkan dengan enum, bukan value
     }
 
     /**
@@ -135,6 +135,6 @@ class Vote extends Model
      */
     public function getIsDownvoteAttribute(): bool
     {
-        return $this->type === VoteType::DOWNVOTE; // Bandingkan dengan enum, bukan value
+        return $this->type === VoteType::DOWN_VOTE;
     }
 }

@@ -121,7 +121,7 @@ class FeedbackPost extends Model
      */
     public function upvotes(): HasMany
     {
-        return $this->hasMany(Vote::class)->where('type', VoteType::UPVOTE);
+        return $this->hasMany(Vote::class)->where('type', VoteType::UP_VOTE);
     }
 
     /**
@@ -131,7 +131,7 @@ class FeedbackPost extends Model
      */
     public function downvotes(): HasMany
     {
-        return $this->hasMany(Vote::class)->where('type', VoteType::DOWNVOTE);
+        return $this->hasMany(Vote::class)->where('type', VoteType::DOWN_VOTE);
     }
 
     /**
@@ -222,8 +222,11 @@ class FeedbackPost extends Model
      */
     public function scopeOrderByVotes($query, string $direction = 'desc'): Builder
     {
-        return $query->withCount(VoteType::cases())
-            ->orderBy('upvotes_count', $direction);
+        $upvote = VoteType::UP_VOTE;
+        $relation = $upvote->value;
+        $column   = "{$relation}_count";
+
+        return $query->withCount($relation)->orderBy($column, $direction);
     }
 
     // ========== ACCESSORS ==========

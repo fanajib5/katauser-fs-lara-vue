@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum VoteType: string
 {
-    case UPVOTE = 'upvote';
-    case DOWNVOTE = 'downvote';
+    case UP_VOTE = 'upvote';
+    case DOWN_VOTE = 'downvote';
 }
