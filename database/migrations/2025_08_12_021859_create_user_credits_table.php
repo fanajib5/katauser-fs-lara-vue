@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_id');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('subscription_id')->nullable()->constrained('subscriptions')->cascadeOnDelete();
             $table->foreignId('transaction_id')->constrained('transactions')->cascadeOnDelete();
             $table->integer('change_amount')->comment('positif untuk penambahan, negatif untuk pengurangan');
             $table->integer('balance_after')->comment('sisa saldo credit setelah perubahan');

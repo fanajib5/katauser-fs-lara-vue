@@ -16,8 +16,9 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Developer',
+            'email' => 'admin@akordium.id',
+            'password' => '$2a$12$UmrRtAqgCaNb48ov5SyutOzaE.ONvaS.vPgYlVe6zfVYXQGmPU0V.',
         ]);
     }
 }
