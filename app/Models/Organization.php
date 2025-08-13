@@ -29,10 +29,6 @@ class Organization extends Model
         'deleted_by',
     ];
 
-    protected $appends = [
-        'version',
-    ];
-
     protected function casts(): array
     {
         return [
