@@ -8,6 +8,6 @@ enum RoadmapItemStatus: string
     case PLANNED = 'planned';
     case ARCHIVED = 'archived';
     case COMPLETED = 'completed';
-    case INPROGRESS = 'in_progress';
+    case IN_PROGRESS = 'in_progress';
     case CANCELLED = 'cancelled';
 }
