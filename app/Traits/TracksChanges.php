@@ -43,15 +43,16 @@ trait TracksChanges
 
             // Simpan versi lama ke audit trail
             if ($model->isDirty()) {
-                $original = $model->getOriginal()->except($this->auditIgnore());
-                $changed = $model->getDirty()->except($this->auditIgnore());
+                $ignore = (new static)->auditIgnore();
+                $original = collect($model->getOriginal())->except($ignore);
+                $changed = collect($model->getDirty())->except($ignore);
 
                AuditTrail::create([
                     'model_type' => get_class($model),
                     'model_id' => $model->getKey(),
                     'user_id' => Auth::id(),
-                    'before' => json_encode($original),
-                    'after' => json_encode($changed),
+                    'before' => $original->all(),
+                    'after' => $changed->all(),
                 ]);
             }
 
