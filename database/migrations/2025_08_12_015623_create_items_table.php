@@ -26,9 +26,9 @@ return new class extends Migration
             $table->decimal('price', 12, 2);
             $table->enum('type', ItemType::cases());
             $table->unsignedInteger('version')->default(1);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

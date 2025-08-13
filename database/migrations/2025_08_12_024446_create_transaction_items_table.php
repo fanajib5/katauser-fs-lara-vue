@@ -15,14 +15,14 @@ return new class extends Migration
         Schema::create('transaction_items', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('transaction_id')->constrained('transactions')->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained('items')->cascadeOnDelete();
+            $table->foreignId('transaction_id')->constrained('transactions')->cascadecascadeOnDelete();
+            $table->foreignId('item_id')->constrained('items')->cascadecascadeOnDelete();
             $table->unsignedInteger('quantity');
             $table->decimal('price', 12, 2);
             $table->decimal('subtotal', 12, 2);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

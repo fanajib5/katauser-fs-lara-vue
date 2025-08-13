@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('model_type');
             $table->unsignedBigInteger('model_id');
-            $table->foreignId('user_id')->nullable()->constrained('users')->noActionOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->jsonb('before')->nullable();
             $table->jsonb('after')->nullable();
             $table->timestampTz('created_at');

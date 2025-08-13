@@ -25,8 +25,8 @@ return new class extends Migration
         Schema::create('feedback_posts', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('feedback_board_id')->constrained('feedback_boards')->restrictOnDelete();
-            $table->foreignId('member_id')->constrained('members')->restrictOnDelete();
+            $table->foreignId('feedback_board_id')->constrained('feedback_boards')->cascadeOnDelete();
+            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
             $table->string('title');
             $table->text('content');
             $table->enum('source', FeedbackPostSource::cases());
@@ -36,9 +36,9 @@ return new class extends Migration
             $table->jsonb('metadata')->nullable();
             $table->timestampTz('set_to_public_at')->nullable();
             $table->unsignedInteger('version')->default(1);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('changelogs', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('organization_id')->constrained('organizations')->restrictOnDelete();
-            $table->foreignId('roadmap_item_id')->nullable()->constrained('roadmap_items')->restrictOnDelete();
+            $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
+            $table->foreignId('roadmap_item_id')->nullable()->constrained('roadmap_items')->cascadeOnDelete();
             $table->string('title');
             $table->text('content');
             $table->string('version', 50);
             $table->timestampTz('published_at')->nullable();
-            $table->foreignId('published_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('published_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

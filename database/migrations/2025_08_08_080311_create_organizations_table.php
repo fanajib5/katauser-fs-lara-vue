@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('plan_id')->constrained()->restrictOnDelete();
+            $table->foreignId('plan_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('slug');
             $table->string('subdomain');
@@ -22,9 +22,9 @@ return new class extends Migration
             $table->timestampTz('domain_verified_at')->nullable();
             $table->jsonb('urls');
             $table->unsignedInteger('version')->default(1);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

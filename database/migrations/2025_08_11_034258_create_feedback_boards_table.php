@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('feedback_boards', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('organization_id')->constrained('organizations')->restrictOnDelete();
+            $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
             $table->timestampTz('set_to_public_at')->nullable();
             $table->unsignedInteger('version')->default(1);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

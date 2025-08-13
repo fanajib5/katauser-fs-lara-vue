@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('user_credits', function (Blueprint $table) {
             $table->foreignId('subscription_id')->nullable()
-                ->after('user_id')->constrained('subscriptions')->cascadeOnDelete();
+                ->after('user_id')->constrained('subscriptions')->cascadecascadeOnDelete();
         });
     }
 

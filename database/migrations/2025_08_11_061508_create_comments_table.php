@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('feedback_post_id')->constrained('feedback_posts')->restrictOnDelete();
-            $table->foreignId('member_id')->constrained('members')->restrictOnDelete();
+            $table->foreignId('feedback_post_id')->constrained('feedback_posts')->cascadeOnDelete();
+            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
             $table->text('content');
-            $table->foreignId('parent_id')->nullable()->constrained('comments')->restrictOnDelete();
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('comments')->cascadeOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

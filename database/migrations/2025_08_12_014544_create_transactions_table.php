@@ -21,9 +21,9 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_code');
-            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('plan_id')->nullable()->comment('hanya untuk subscription')
-                ->constrained('plans')->restrictOnDelete();
+                ->constrained('plans')->cascadeOnDelete();
             $table->string('payment_method');
             $table->jsonb('custom_package_details');
             $table->decimal('total_amount', 12, 2);

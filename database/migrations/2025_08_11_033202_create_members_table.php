@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id');
-            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
-            $table->foreignId('organization_id')->constrained('organizations')->restrictOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
             $table->text('bio');
             $table->string('avatar');
             $table->unsignedInteger('version')->default(1);
-            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('updated_by')->constrained('users')->restrictOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->foreignId('disabled_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('disabled_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->timestampTz('disabled_at')->nullable();
