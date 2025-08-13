@@ -64,26 +64,11 @@ class Subscription extends Model
      * Get the plan through the transaction.
      * Subscription -> Transaction -> Plan
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return Plan|null
      */
-    public function plan(): HasOneThrough
+    public function plan(): ?Plan
     {
-        // Perbaiki definisi relasi HasOneThrough
-        // Param 1: Model akhir (Plan)
-        // Param 2: Model perantara (Transaction)
-        // Param 3: FK di tabel perantara (subscriptions) yang mengacu ke tabel saat ini (subscriptions) -> 'id' (PK subscriptions)
-        // Param 4: FK di tabel akhir (plans) yang mengacu ke tabel perantara (transactions) -> 'plan_id'
-        // Param 5: Local key di tabel saat ini (subscriptions) -> 'transaction_id'
-        // Param 6: Local key di tabel perantara (transactions) -> 'id' (PK transactions)
-        return $this->hasOneThrough(
-            Plan::class,
-            Transaction::class,
-            'id', // FK di subscriptions (PK subscriptions.id)
-            'id', // FK di plans (PK plans.id)
-            'transaction_id', // Local key di subscriptions (subscriptions.transaction_id)
-            'plan_id' // Local key di transactions (transactions.plan_id)
-        );
-        // Ini akan mengambil Plan yang terkait dengan Transaction yang membuat Subscription ini.
+        return $this->transaction?->plan;
     }
 
     // ========== HAS MANY RELATIONS ==========
