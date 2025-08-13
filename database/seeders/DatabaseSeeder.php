@@ -13,12 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Developer',
-            'email' => 'admin@akordium.id',
-            'password' => '$2a$12$UmrRtAqgCaNb48ov5SyutOzaE.ONvaS.vPgYlVe6zfVYXQGmPU0V.',
-        ]);
+        $this->call(UserWithPermissionSeeder::class);
     }
 }

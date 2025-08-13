@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasManyThrough};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasManyThrough};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Organization extends Model
@@ -99,17 +99,6 @@ class Organization extends Model
     // ========== HAS MANY RELATIONS ==========
 
     /**
-     * Get all users associated with this organization.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function users(): HasMany
-    {
-        return $this->hasMany(User::class);
-        // Kolom FK di User: organization_id
-    }
-
-    /**
      * Get all members of this organization.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -163,6 +152,18 @@ class Organization extends Model
         return $this->hasManyThrough(FeedbackPost::class, FeedbackBoard::class);
     }
 
+    // ========== BELONGS TO MANY RELATIONS ==========
+
+    /**
+     * Get all users associated with this organization.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+        // Kolom FK di User: organization_id
+    }
 
     // ========== SCOPES ==========
 

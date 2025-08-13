@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -56,16 +56,6 @@ class User extends Authenticatable
     }
 
     // ========== BELONGS TO RELATIONS ==========
-
-    /**
-     * User belongs to an organization
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\User>
-     */
-    public function organization(): BelongsTo
-    {
-        return $this->belongsTo(Organization::class);
-    }
 
     /**
      * User was assigned as admin by another user
@@ -137,6 +127,18 @@ class User extends Authenticatable
     public function userCredits(): HasMany
     {
         return $this->hasMany(UserCredit::class);
+    }
+
+    // ========== BELONGS TO MANY RELATIONS ==========
+
+    /**
+     * User belongs to an organization
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Organization,\App\Models\User>
+     */
+    public function organization(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class);
     }
 
     // ========== HAS ONE RELATIONS ==========
