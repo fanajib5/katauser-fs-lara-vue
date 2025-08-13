@@ -138,19 +138,6 @@ class Subscription extends Model
     // ========== ACCESSORS ==========
 
     /**
-     * Check if subscription is active and not expired.
-     * (Perbaiki logika untuk mencocokkan scope)
-     *
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        // Perbaiki: kolom yang benar adalah 'is_active', dan tambahkan pengecekan tanggal
-        return $this->attributes['is_active'] &&
-                ($this->end_date === null || $this->end_date->isFuture());
-    }
-
-    /**
      * Check if subscription is expired.
      *
      * @return bool
@@ -182,7 +169,7 @@ class Subscription extends Model
      *
      * @return bool
      */
-    public function isCurrentlyActive(): bool
+    public function isActive(): bool
     {
             return $this->is_active && ($this->end_date === null || $this->end_date->isFuture());
     }
