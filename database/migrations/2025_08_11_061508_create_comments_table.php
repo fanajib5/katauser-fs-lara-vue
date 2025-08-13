@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
             $table->text('content');
             $table->foreignId('parent_id')->nullable()->constrained('comments')->cascadeOnDelete();
+            $table->unsignedInteger('version')->default(1);
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();
