@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use TracksChanges, SoftDeletes;
+    use TracksChanges;
 
     protected $fillable = [
         'transaction_code',
