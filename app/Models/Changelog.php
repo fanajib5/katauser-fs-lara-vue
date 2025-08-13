@@ -48,7 +48,7 @@ class Changelog extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\Changelog>
      */
-    public function organization()
+    public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
@@ -58,7 +58,7 @@ class Changelog extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\RoadmapItem,\App\Models\Changelog>
      */
-    public function roadmapItem()
+    public function roadmapItem(): BelongsTo
     {
         return $this->belongsTo(RoadmapItem::class);
     }
