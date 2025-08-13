@@ -46,7 +46,7 @@ class AuditTrail extends Model
     public function casts(): array
     {
         return [
-            'id' => (string) Str::uuid(),
+            'id' => 'string',
             'model_type' => 'string',
             'model_id' => 'integer',
             'user_id' => 'integer',
