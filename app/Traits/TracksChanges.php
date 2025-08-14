@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\AuditTrail;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\{Auth, Schema};
 
 trait TracksChanges
 {
@@ -17,6 +17,7 @@ trait TracksChanges
     protected function auditIgnore(): array
     {
         return [
+            'version',
             'created_at',
             'updated_at',
             'deleted_at',
@@ -55,7 +56,10 @@ trait TracksChanges
                 ]);
             }
 
-            $model->version++;
+            // Tambahkan versi jika kolomnya ada
+            if ($model->hasVersionColumn()) {
+                $model->version = ($model->version ?? 0) + 1;
+            }
         });
 
         static::deleting(function ($model) {
@@ -64,6 +68,23 @@ trait TracksChanges
                 $model->saveQuietly();
             }
         });
+    }
+
+    /**
+     * Mengecek apakah model memiliki kolom 'version' di tabelnya.
+     * Cache disimpan per class model agar tidak query berulang.
+     */
+    protected function hasVersionColumn(): bool
+    {
+        static $cache = [];
+
+        $class = static::class;
+
+        if (!isset($cache[$class])) {
+            $cache[$class] = Schema::hasColumn($this->getTable(), 'version');
+        }
+
+        return $cache[$class];
     }
 
     public function createdBy(): BelongsTo

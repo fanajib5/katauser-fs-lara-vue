@@ -16,9 +16,6 @@ return new class extends Migration
             $table->uuid('public_id');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
-            $table->text('bio');
-            $table->string('avatar');
-            $table->unsignedInteger('version')->default(1);
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('updated_by')->constrained('users')->cascadeOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnDelete();

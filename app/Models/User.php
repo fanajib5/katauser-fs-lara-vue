@@ -3,19 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +29,6 @@ class User extends Authenticatable
         'assigned_as_admin_at',
         'assigned_as_admin_by',
         'organization_id',
-        'role',
     ];
 
     /**
@@ -53,21 +52,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'assigned_as_admin_at' => 'datetime',
             'password' => 'hashed',
-            'role' => UserRole::class,
         ];
     }
 
     // ========== BELONGS TO RELATIONS ==========
-
-    /**
-     * User belongs to an organization
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\User>
-     */
-    public function organization(): BelongsTo
-    {
-        return $this->belongsTo(Organization::class);
-    }
 
     /**
      * User was assigned as admin by another user
@@ -139,6 +127,18 @@ class User extends Authenticatable
     public function userCredits(): HasMany
     {
         return $this->hasMany(UserCredit::class);
+    }
+
+    // ========== BELONGS TO MANY RELATIONS ==========
+
+    /**
+     * User belongs to an organization
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Organization,\App\Models\User>
+     */
+    public function organization(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class);
     }
 
     // ========== HAS ONE RELATIONS ==========
