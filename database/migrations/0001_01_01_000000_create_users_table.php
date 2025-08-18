@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestampTz('assigned_as_admin_at')->nullable();
-            $table->foreignId('assigned_as_admin_by')->nullable()
-                ->references('id')->on('users')->cascadeOnDelete;
+            $table->foreignId('assigned_as_admin_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('organization_id')->nullable()->constrained()->nullOnDelete(); // default org
             $table->timestampsTz();
             $table->softDeletesTz();
+            $table->index(['organization_id']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
