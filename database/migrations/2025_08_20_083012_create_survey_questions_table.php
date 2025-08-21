@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('survey_questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('survey_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('type_id')->constrained()->nullOnDelete(); // rating, nps, mcq, text
             $table->text('label');
             $table->jsonb('options')->nullable(); // untuk mcq
             $table->unsignedInteger('position')->default(0);
