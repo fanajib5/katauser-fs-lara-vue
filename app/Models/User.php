@@ -5,9 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -15,7 +14,16 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasFactory;
+
+    /** @use HasRoles<\Spatie\Permission\Models\Role, \Spatie\Permission\Models\Permission> */
+    use HasRoles;
+
+    /** @use Notifiable<\Illuminate\Notifications\Notifiable> */
+    use Notifiable;
+
+    /** @use SoftDeletes<\Illuminate\Database\Eloquent\SoftDeletes> */
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -56,6 +64,16 @@ class User extends Authenticatable
     }
 
     // ========== BELONGS TO RELATIONS ==========
+
+    /**
+     * User belongs to an organization
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\User>
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 
     /**
      * User was assigned as admin by another user
@@ -129,22 +147,20 @@ class User extends Authenticatable
         return $this->hasMany(UserCredit::class);
     }
 
-    // ========== BELONGS TO MANY RELATIONS ==========
-
     /**
-     * User belongs to an organization
+     * Audit trails where this user performed actions
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Organization,\App\Models\User>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\AuditTrail,\App\Models\User>
      */
-    public function organization(): BelongsToMany
-    {
-        return $this->belongsToMany(Organization::class);
-    }
+     public function auditTrails(): HasMany
+     {
+         return $this->hasMany(AuditTrail::class, 'user_id', 'id');
+     }
 
     // ========== HAS ONE RELATIONS ==========
 
     /**
-     * Get the member profile for this user.
+     * Get the member profile for this user in their organization.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Member,\App\Models\User>
      */
@@ -168,24 +184,35 @@ class User extends Authenticatable
     /**
      * Scope query untuk admin users
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
      */
-    public function scopeAdmins($query): Builder
+    public function scopeAdmins(Builder $query): Builder
     {
-        return $query->where('role', UserRole::ADMIN);
+        return $query->whereNotNull('assigned_as_admin_at');
     }
 
     /**
      * Scope query untuk user dengan organization tertentu
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
      * @param int $organizationId
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
      */
-    public function scopeInOrganization($query, $organizationId): Builder
+    public function scopeInOrganization(Builder $query, int $organizationId): Builder
     {
         return $query->where('organization_id', $organizationId);
+    }
+
+    /**
+     * Scope query untuk user yang bukan admin
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
+     */
+    public function scopeNonAdmins(Builder $query): Builder
+    {
+        return $query->whereNull('assigned_as_admin_at');
     }
 
     // ========== ACCESSOR & MUTATOR METHODS ==========
@@ -196,5 +223,21 @@ class User extends Authenticatable
     public function getCurrentCreditBalance(): int
     {
         return $this->userCredits()->latest()->first()?->balance_after ?? 0;
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->assigned_as_admin_at != null;
+    }
+
+    /**
+     * Check if user has active subscription
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->activeSubscription()->exists();
     }
 }
