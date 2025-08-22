@@ -18,7 +18,7 @@ class AuditTrail extends Model
      *
      * @var string|null
      */
-    protected const UPDATED_AT = null;
+     const UPDATED_AT = null;
 
     /**
      * The attributes that are mass assignable.
@@ -42,8 +42,8 @@ class AuditTrail extends Model
     protected function casts(): array
     {
         return [
-            'before' => 'array', // Data disimpan sebagai JSONB
-            'after' => 'array',  // Data disimpan sebagai JSONB
+            'before' => 'array', // Data stored as JSONB
+            'after' => 'array',  // Data stored as JSONB
             'created_at' => 'datetime',
         ];
     }
@@ -70,7 +70,6 @@ class AuditTrail extends Model
         return $this->belongsTo(Organization::class, 'organization_id');
     }
 
-    // Optional: Jika ingin mendukung model polymorphic (untuk model yang diaudit)
     /**
      * Get the audited model (polymorphic relation).
      *
@@ -78,7 +77,7 @@ class AuditTrail extends Model
      */
     public function auditable(): MorphTo
     {
-        return $this->morphTo('model', 'model_type', 'model_id');
+        return $this->morphTo(null, 'model_type', 'model_id');
     }
 
     // ========== SCOPES ==========
