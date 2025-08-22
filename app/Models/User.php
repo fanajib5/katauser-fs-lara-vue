@@ -13,9 +13,16 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
+    /** @use HasRoles<\Spatie\Permission\Models\Role, \Spatie\Permission\Models\Permission> */
     use HasRoles;
+
+    /** @use Notifiable<\Illuminate\Notifications\Notifiable> */
     use Notifiable;
+
+    /** @use SoftDeletes<\Illuminate\Database\Eloquent\SoftDeletes> */
     use SoftDeletes;
 
     /**

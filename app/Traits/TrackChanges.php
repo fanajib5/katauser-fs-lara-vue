@@ -54,7 +54,7 @@ trait TracksChanges
                 $after = json_encode($changed);
 
                 AuditTrail::create([
-                    'model_type' => get_class($model),
+                    'model_type' => $model->getMorphClass(),
                     'model_id' => $model->getKey(),
                     'user_id' => Auth::id(),
                     'before' => $before,
