@@ -2,21 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AuditTrail extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\AuditTrailFactory> */
     use HasFactory;
 
     /**
-     * Indicates if the model should be timestamped.
+     * The name of the "updated at" column.
      *
-     * @var bool
+     * @var string|null
      */
-    public $timestamps = false; // Karena hanya 'created_at' digunakan, kita atur manual
+    protected const UPDATED_AT = null;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +31,6 @@ class AuditTrail extends Model
         'user_id',
         'before',
         'after',
-        'created_at',
         'organization_id',
     ];
 
@@ -75,7 +76,7 @@ class AuditTrail extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function auditable()
+    public function auditable(): MorphTo
     {
         return $this->morphTo('model', 'model_type', 'model_id');
     }
@@ -89,7 +90,7 @@ class AuditTrail extends Model
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Database\Eloquent\Builder<\App\Models\AuditTrail>
      */
-    public function scopeForModel($query, Model $model)
+    public function scopeForModel($query, Model $model): Builder
     {
         return $query->where('model_type', $model->getMorphClass())
                      ->where('model_id', $model->getKey());
@@ -102,7 +103,7 @@ class AuditTrail extends Model
      * @param  int  $organizationId
      * @return \Illuminate\Database\Eloquent\Builder<\App\Models\AuditTrail>
      */
-    public function scopeInOrganization($query, int $organizationId)
+    public function scopeInOrganization($query, int $organizationId): Builder
     {
         return $query->where('organization_id', $organizationId);
     }
