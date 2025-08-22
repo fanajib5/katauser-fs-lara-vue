@@ -19,8 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestampTz('assigned_as_admin_at')->nullable();
-            $table->foreignId('assigned_as_admin_by')->nullable()
-                ->references('id')->on('users')->cascadeOnDelete;
+            $table->foreignId('assigned_as_admin_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestampsTz();
             $table->softDeletesTz();
         });
