@@ -5,16 +5,14 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany, HasOne};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasOne};
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
@@ -56,6 +54,16 @@ class User extends Authenticatable
     }
 
     // ========== BELONGS TO RELATIONS ==========
+
+    /**
+     * User belongs to an organization
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Organization,\App\Models\User>
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
 
     /**
      * User was assigned as admin by another user
@@ -129,22 +137,170 @@ class User extends Authenticatable
         return $this->hasMany(UserCredit::class);
     }
 
-    // ========== BELONGS TO MANY RELATIONS ==========
+    /**
+     * User can create many plans
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Plan,\App\Models\User>
+     */
+    public function createdPlans(): HasMany
+    {
+        return $this->hasMany(Plan::class, 'created_by');
+    }
 
     /**
-     * User belongs to an organization
+     * User can update many plans
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Organization,\App\Models\User>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Plan,\App\Models\User>
      */
-    public function organization(): BelongsToMany
+    public function updatedPlans(): HasMany
     {
-        return $this->belongsToMany(Organization::class);
+        return $this->hasMany(Plan::class, 'updated_by');
+    }
+
+    /**
+     * User can create many organizations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Organization,\App\Models\User>
+     */
+    public function createdOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, 'created_by');
+    }
+
+    /**
+     * User can update many organizations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Organization,\App\Models\User>
+     */
+    public function updatedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, 'updated_by');
+    }
+
+    /**
+     * User can create many feedback boards
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\FeedbackBoard,\App\Models\User>
+     */
+    public function createdFeedbackBoards(): HasMany
+    {
+        return $this->hasMany(FeedbackBoard::class, 'created_by');
+    }
+
+    /**
+     * User can create many feedback posts
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\FeedbackPost,\App\Models\User>
+     */
+    public function createdFeedbackPosts(): HasMany
+    {
+        return $this->hasMany(FeedbackPost::class, 'created_by');
+    }
+
+    /**
+     * User can create many comments
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Comment,\App\Models\User>
+     */
+    public function createdComments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'created_by');
+    }
+
+    /**
+     * User can create many votes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Vote,\App\Models\User>
+     */
+    public function createdVotes(): HasMany
+    {
+        return $this->hasMany(Vote::class, 'created_by');
+    }
+
+    /**
+     * User can create many roadmaps
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Roadmap,\App\Models\User>
+     */
+    public function createdRoadmaps(): HasMany
+    {
+        return $this->hasMany(Roadmap::class, 'created_by');
+    }
+
+    /**
+     * User can create many roadmap items
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\RoadmapItem,\App\Models\User>
+     */
+    public function createdRoadmapItems(): HasMany
+    {
+        return $this->hasMany(RoadmapItem::class, 'created_by');
+    }
+
+    /**
+     * User can create many changelogs
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Changelog,\App\Models\User>
+     */
+    public function createdChangelogs(): HasMany
+    {
+        return $this->hasMany(Changelog::class, 'created_by');
+    }
+
+    /**
+     * User can create many surveys
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Survey,\App\Models\User>
+     */
+    public function createdSurveys(): HasMany
+    {
+        return $this->hasMany(Survey::class, 'created_by');
+    }
+
+    /**
+     * User can create many survey types
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\SurveyType,\App\Models\User>
+     */
+    public function createdSurveyTypes(): HasMany
+    {
+        return $this->hasMany(SurveyType::class, 'created_by');
+    }
+
+    /**
+     * User can create many items
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Item,\App\Models\User>
+     */
+    public function createdItems(): HasMany
+    {
+        return $this->hasMany(Item::class, 'created_by');
+    }
+
+    /**
+     * User can create many transaction items
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TransactionItem,\App\Models\User>
+     */
+    public function createdTransactionItems(): HasMany
+    {
+        return $this->hasMany(TransactionItem::class, 'created_by');
+    }
+
+    /**
+     * Audit trails where this user performed actions
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\AuditTrail,\App\Models\User>
+     */
+    public function auditTrails(): HasMany
+    {
+        return $this->hasMany(AuditTrail::class);
     }
 
     // ========== HAS ONE RELATIONS ==========
 
     /**
-     * Get the member profile for this user.
+     * Get the member profile for this user in their organization.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Member,\App\Models\User>
      */
@@ -168,24 +324,35 @@ class User extends Authenticatable
     /**
      * Scope query untuk admin users
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
      */
-    public function scopeAdmins($query): Builder
+    public function scopeAdmins(Builder $query): Builder
     {
-        return $query->where('role', UserRole::ADMIN);
+        return $query->whereNotNull('assigned_as_admin_at');
     }
 
     /**
      * Scope query untuk user dengan organization tertentu
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
      * @param int $organizationId
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
      */
-    public function scopeInOrganization($query, $organizationId): Builder
+    public function scopeInOrganization(Builder $query, int $organizationId): Builder
     {
         return $query->where('organization_id', $organizationId);
+    }
+
+    /**
+     * Scope query untuk user yang bukan admin
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\App\Models\User> $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
+     */
+    public function scopeNonAdmins(Builder $query): Builder
+    {
+        return $query->whereNull('assigned_as_admin_at');
     }
 
     // ========== ACCESSOR & MUTATOR METHODS ==========
@@ -196,5 +363,21 @@ class User extends Authenticatable
     public function getCurrentCreditBalance(): int
     {
         return $this->userCredits()->latest()->first()?->balance_after ?? 0;
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return !is_null($this->assigned_as_admin_at);
+    }
+
+    /**
+     * Check if user has active subscription
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->activeSubscription()->exists();
     }
 }
