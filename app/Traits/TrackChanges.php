@@ -44,7 +44,7 @@ trait TracksChanges
 
             // Simpan versi lama ke audit trail
             if ($model->isDirty()) {
-                $changed = array_diff_key($model->getDirty(), array_flip($this->auditIgnore()));
+                $changed = array_diff_key($model->getDirty(), array_flip($model->auditIgnore()));
 
                 if (empty($changed)) {
                     return;
