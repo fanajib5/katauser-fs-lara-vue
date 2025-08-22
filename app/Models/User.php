@@ -191,22 +191,6 @@ class User extends Authenticatable
     // ========== ACCESSOR & MUTATOR METHODS ==========
 
     /**
-     * Check if user is admin
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === UserRole::ADMIN;
-    }
-
-    /**
-     * Check if user is developer
-     */
-    public function isDeveloper(): bool
-    {
-        return $this->role === UserRole::DEVELOPER;
-    }
-
-    /**
      * Get user's current credit balance
      */
     public function getCurrentCreditBalance(): int
