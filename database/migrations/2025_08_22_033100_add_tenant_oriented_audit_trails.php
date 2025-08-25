@@ -26,7 +26,6 @@ return new class extends Migration
         Schema::table('audit_trails', function (Blueprint $table) {
             $table->dropForeign(['organization_id']);
             $table->dropColumn('organization_id');
-            $table->dropIndex(['organization_id', 'created_at']);
         });
     }
 };

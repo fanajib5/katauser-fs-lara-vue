@@ -16,14 +16,11 @@ return new class extends Migration
             $table->string('model_type');
             $table->unsignedBigInteger('model_id');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('organization_id')->nullable()->constrained('organizations')->nullOnDelete();
             $table->jsonb('before')->nullable();
             $table->jsonb('after')->nullable();
             $table->timestampTz('created_at');
 
             $table->index(['model_type','model_id']);
-            $table->index('organization_id');
-            $table->index('created_at');
         });
     }
 
