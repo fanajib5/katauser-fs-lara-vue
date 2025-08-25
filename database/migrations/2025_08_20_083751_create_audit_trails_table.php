@@ -19,6 +19,7 @@ return new class extends Migration
             $table->jsonb('before')->nullable();
             $table->jsonb('after')->nullable();
             $table->timestampTz('created_at');
+
             $table->index(['model_type','model_id']);
         });
     }
